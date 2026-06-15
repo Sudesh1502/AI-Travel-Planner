@@ -1,5 +1,6 @@
 import Trip from '../models/trip.model.js'
 import ApiError from '../utils/apiError.js';
+import { generateTripPlan } from './ai.service.js';
 export const createTrip = async(tripData) =>{
     const trip = await Trip.create(tripData);
     return trip;
@@ -34,3 +35,14 @@ export const deleteTrip = async({tripId, userId}) =>{
     return trip;
 
 }
+
+export const generateTrip = async (tripData, userId) => {
+    const aiResponse = await generateTripPlan(tripData);
+
+    const trip = await Trip.create({
+        userId,
+        ...tripData,
+        ...aiResponse
+    });
+    return trip;
+};
