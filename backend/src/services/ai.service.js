@@ -1,37 +1,62 @@
+import OpenAI from "openai";
+import buildPrompt from "../utils/prompt.js";
+import ApiError from "../utils/apiError.js";
+
+const createClient = () => {
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+};
 export const generateTripPlan = async (tripData) => {
-  return {
-    itinerary: [
-      {
-        dayNumber: 1,
-        title: "Arrival Day",
-        activities: [
-          {
-            activityId: "act_001",
-            title: "Check In Hotel",
-            description: "Relax after arrival",
-            recommendedTime: "2:00 PM",
-          },
-        ],
+  try {
+    const client = createClient();
+    const prompt = buildPrompt(tripData);
+    const completions = await client.chat.completions.create({
+      model: "gpt-4.1-mini",
+      temperature: 0.4,
+      response_format: {
+        type: "json_object",
       },
-    ],
+      messages: [
+        {
+          role: "system",
+          content: `
+                        You are an expert travel planner.
 
-    budgetEstimate: {
-      sourceToDestination: 5000,
-      accommodation: 10000,
-      food: 5000,
-      localTransport: 2000,
-      activities: 3000,
-      total: 25000,
-    },
+                        Return only valid JSON.
 
-    hotelSuggestions: [
-      {
-        name: "Demo Hotel",
-        hotelType: "Budget",
-        rating: 4.2,
-        location: "City Center",
-        approximateCostPerNight: 2500,
-      },
-    ],
-  };
+                        Do not return markdown.
+
+                        Do not return explanations.
+                    `,
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
+
+    const content = completions.choices[0]?.message?.content;
+
+    if (!content) {
+      throw new ApiError(500, "Failed to generate trip plan.");
+    }
+
+    const tripPlan = JSON.parse(content);
+
+    if (
+      !tripPlan.itinerary ||
+      !tripPlan.budgetEstimate ||
+      !tripPlan.hotelSuggestions
+    ) {
+      throw new ApiError(500, "Invalid AI response format.");
+    }
+
+    return tripPlan;
+  } catch (error) {
+    console.error("OpenAI Error:", error);
+
+    throw new ApiError(500, "Failed to generate trip plan.");
+  }
 };
