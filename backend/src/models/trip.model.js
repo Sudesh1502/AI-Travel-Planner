@@ -22,7 +22,7 @@ const activitySchema = new mongoose.Schema(
       default: "",
     },
   },
-  { _id: false }
+  { _id: false },
 );
 const budgetEstimateSchema = new mongoose.Schema(
   {
@@ -56,7 +56,7 @@ const budgetEstimateSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 const daySchema = new mongoose.Schema(
   {
@@ -76,7 +76,7 @@ const daySchema = new mongoose.Schema(
       default: [],
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const hotelSuggestionSchema = new mongoose.Schema(
@@ -97,12 +97,18 @@ const hotelSuggestionSchema = new mongoose.Schema(
       max: 5,
     },
 
+    location: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
     approximateCostPerNight: {
       type: Number,
       default: 0,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const tripSchema = new mongoose.Schema(
@@ -176,7 +182,7 @@ const tripSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Trip = mongoose.model("Trip", tripSchema);
