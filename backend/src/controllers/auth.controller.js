@@ -1,5 +1,7 @@
 import { loginUser, registerUser } from "../services/auth.service.js";
 
+//register user=========================================================
+
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -23,6 +25,8 @@ export const register = async (req, res, next) => {
     next(error)
   }
 };
+
+//login user=========================================================
 
 export const login = async (req, res, next) => {
   try {
