@@ -12,7 +12,10 @@ app.use(cookieParser());
 //     origin: process.env.FRONTEND,
 //     credentials:true
 // }))
-app.use(cors())
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials:true,
+}))
 app.use("/api/auth", authRouter);
 app.use("/api/trips", tripRouter);
 app.use(errorHandler);

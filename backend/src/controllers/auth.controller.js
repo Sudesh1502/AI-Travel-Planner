@@ -65,3 +65,15 @@ export const logout = (
       "Logged out successfully",
   });
 };
+
+//get-user===================================================================
+
+export const getUser = async(req, res, next) => {
+  try {
+    const user = req.user;
+
+    return res.status(200).json({success:true, message:"User Fetched.", data:user});
+  } catch (error) {
+    next(error);
+  }
+}
