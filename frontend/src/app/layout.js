@@ -1,9 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext.jsx";
-import { Poppins } from "next/font/google";
+import { Outfit } from "next/font/google";
 
-const poppins = Poppins({
+const outfit = Outfit({
   subsets: ["latin"],
   weight: [
     "100",
@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       
-      <body className={`min-h-full flex flex-col ${poppins.className}`}>
+      <body className={`min-h-full flex flex-col ${outfit.className}`}>
         <AuthProvider>
           {children}
         </AuthProvider>
