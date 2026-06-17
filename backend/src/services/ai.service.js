@@ -14,7 +14,7 @@ export const generateTripPlan = async (tripData) => {
     
     const prompt = buildPrompt(tripData);
 
-    const content = getAiService(prompt);
+    const content = await getAiService(prompt);
     if (!content) {
       throw new ApiError(500, "Failed to generate trip plan.");
     }

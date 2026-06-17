@@ -1,0 +1,9 @@
+export default function FullScreenLoader() {
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
+      <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+      <h3 className="text-lg font-bold text-gray-900">Generating your dream trip...</h3>
+      <p className="text-sm text-gray-500 font-medium mt-1">Our AI is crafting the perfect itinerary</p>
+    </div>
+  );
+}
