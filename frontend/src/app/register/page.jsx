@@ -115,12 +115,18 @@ export default function RegisterPage() {
         {/* Right Pane */}
         <div className="w-full md:w-[55%] flex flex-col items-center p-8 py-6 bg-white overflow-y-auto">
           <div className="w-full max-w-[440px] flex flex-col my-auto">
-            <div className="flex items-center justify-center mb-6">
+            <div className="flex flex-col items-center justify-center mb-6 gap-3">
               <img
                 src="/logo.png"
                 alt="Next Journey"
                 className="max-w-[250px] h-auto"
               />
+              <Link 
+                href="/" 
+                className="text-xs font-semibold text-blue-500 hover:text-blue-700 hover:underline transition-colors"
+              >
+                &larr; Visit Home page
+              </Link>
             </div>
 
             <h1 className="text-3xl font-bold text-gray-900 mb-2">

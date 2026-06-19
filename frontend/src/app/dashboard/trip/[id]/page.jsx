@@ -18,6 +18,8 @@ import DeleteActivityModal from "@/components/DeleteActivityModal";
 import toast from "react-hot-toast";
 import ActivityImage from "@/components/ActivityImage";
 import { formatTripDates } from "@/utils/dateFormatter";
+import { hasTimeConflict } from "@/utils/timeOverlap";
+import { RegenerateDayModal } from "@/components/RegenerateDayModal";
 
 export default function TripDetailsPage() {
   const params = useParams();
@@ -97,7 +99,7 @@ export default function TripDetailsPage() {
         setActivities(result.data.itinerary[currentDay - 1]?.activities || []);
       }
 
-      toast.success(`Day ${currentDay} beautifully regenerated!`);
+      toast.success(`Day ${currentDay} regenerated!`);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to regenerate day.");
     } finally {
@@ -121,6 +123,16 @@ export default function TripDetailsPage() {
         setActivityTitle("");
         setActivityDescription("");
         setActivityTime("");
+        return;
+      }
+
+      const dayObject = trip.itinerary.find(
+        (day) => day.dayNumber === currentDay,
+      );
+      const existingActivities = dayObject ? dayObject.activities : [];
+      const conflictFound = hasTimeConflict(timeString, existingActivities);
+      if (conflictFound) {
+        toast.error("Warning: This time overlaps with an existing activity!");
         return;
       }
 
@@ -189,118 +201,14 @@ export default function TripDetailsPage() {
         />
       )}
       {regenrateModal && (
-        <Modal>
-          {/* Modal Container */}
-          <div className="bg-white rounded-2xl w-full max-w-[420px] shadow-2xl flex flex-col overflow-hidden">
-            {/* 1. Header Section */}
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-gray-900">
-                Regenerate Day {currentDay}
-              </h2>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setRegenrateModal(false);
-                  setDayDescription("");
-                  setNumberOfActivities(1);
-                }}
-                className="text-gray-400 hover:text-gray-700 transition-colors"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {/* 2. Body Section */}
-            <div className="p-6 flex flex-col gap-6">
-              {/* Number of Activities */}
-              <div>
-                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                  No. of Activities you want to do
-                </label>
-                {/* Stepper Input */}
-                <div className="flex items-center w-32 h-10 border border-gray-200 rounded-lg overflow-hidden">
-                  <button
-                    type="button"
-                    className="flex-1 h-full flex items-center justify-center text-blue-600 hover:bg-blue-50 transition-colors font-bold text-xl"
-                    onClick={() => {
-                      if (numberOfActivities > 1) {
-                        setNumberOfActivities((prev) => prev - 1);
-                      }
-                    }}
-                  >
-                    −
-                  </button>
-                  <div className="flex-1 h-full flex items-center justify-center border-x border-gray-200 font-bold text-gray-900 text-sm">
-                    {numberOfActivities}
-                  </div>
-                  <button
-                    type="button"
-                    className="flex-1 h-full flex items-center justify-center text-blue-600 hover:bg-blue-50 transition-colors font-bold text-xl"
-                    onClick={() => {
-                      if (numberOfActivities < 15) {
-                        setNumberOfActivities((prev) => prev + 1);
-                      }
-                    }}
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {/* Description / Vibe */}
-              <div>
-                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                  Describe the day schedule or Vibe
-                </label>
-                <textarea
-                  rows="4"
-                  className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all resize-none placeholder-gray-400"
-                  placeholder="e.g., relaxed morning, energetic evening"
-                  name="userPreferences"
-                  onChange={(e) => {
-                    setDayDescription(e.target.value);
-                  }}
-                ></textarea>
-              </div>
-            </div>
-
-            {/* 3. Footer Section with Buttons */}
-            <div className="px-6 py-4 border-t border-gray-100 flex justify-center sm:justify-end gap-3 bg-gray-50/50">
-              <button
-                onClick={() => {
-                  setRegenrateModal(false);
-                  setDayDescription("");
-                  setNumberOfActivities(1);
-                }}
-                className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-100 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  // Add your regenerate logic here!
-                  console.log("Regenerating...");
-                  handleRegenerate();
-                }}
-                className="px-6 py-2.5 bg-[#0044CC] hover:bg-blue-800 text-white rounded-lg text-sm font-bold shadow-sm transition-colors"
-              >
-                Regenerate Day
-              </button>
-            </div>
-          </div>
-        </Modal>
+        <RegenerateDayModal
+        currentDay={currentDay}
+          handleRegenerate={handleRegenerate}
+          setRegenrateModal={setRegenrateModal}
+          setDayDescription={setDayDescription}
+          setNumberOfActivities={setNumberOfActivities}
+          numberOfActivities={numberOfActivities}
+        />
       )}
       {loading && <FullScreenLoader />}
       {/* Top Header Section */}
@@ -338,10 +246,10 @@ export default function TripDetailsPage() {
             {formatTripDates(trip?.tripDate, trip?.numberOfDays)}
           </div>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-2.5 rounded-lg flex items-center gap-2 transition-colors"
-        onClick={() => router.back()}
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-2.5 rounded-lg flex items-center gap-2 transition-colors"
+          onClick={() => router.back()}
         >
-          
           Back
         </button>
       </div>
@@ -402,11 +310,36 @@ export default function TripDetailsPage() {
                 </div>
               </div>
 
+              {/* Activities */}
+              <div>
+                <div className="flex justify-between text-xs font-semibold text-gray-500 mb-1">
+                  <span>Activities</span>
+                  <span>${trip?.budgetEstimate?.activities}</span>
+                </div>
+
+                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500 rounded-full"
+                    style={{
+                      width: `${
+                        (trip?.budgetEstimate?.activities /
+                          trip?.budgetEstimate?.total) *
+                        100
+                      }%`,
+                    }}
+                  />
+                </div>
+              </div>
+
               {/* Transport */}
               <div>
                 <div className="flex justify-between text-xs font-semibold text-gray-500 mb-1">
-                  <span>Transportation</span>
-                  <span>${trip?.budgetEstimate?.localTransport}</span>
+                  <span>Transportation & Travel</span>
+                  <span>
+                    $
+                    {trip?.budgetEstimate?.localTransport +
+                      trip?.budgetEstimate?.sourceToDestination}
+                  </span>
                 </div>
 
                 <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
@@ -414,7 +347,8 @@ export default function TripDetailsPage() {
                     className="h-full bg-orange-500 rounded-full"
                     style={{
                       width: `${
-                        (trip?.budgetEstimate?.localTransport /
+                        ((trip?.budgetEstimate?.localTransport +
+                          trip?.budgetEstimate?.sourceToDestination) /
                           trip?.budgetEstimate?.total) *
                         100
                       }%`,
@@ -429,7 +363,6 @@ export default function TripDetailsPage() {
           <div>
             <div className="flex justify-between items-center mb-3 px-1">
               <h3 className="font-bold text-gray-900">Stays Options</h3>
-              
             </div>
             <div className="flex flex-col gap-3 max-h-[400px] overflow-y-scroll pr-2 pb-4 thin-scrollbar">
               {/* Hotel 1 */}
@@ -440,9 +373,9 @@ export default function TripDetailsPage() {
                   key={hotel.name + Date.now()}
                 >
                   <div className="w-[120px] shrink-0 bg-gray-200">
-                    <ActivityImage 
-                      keyword="" 
-                      fallbackTitle={`${hotel.name} hotel ${trip?.destination}`} 
+                    <ActivityImage
+                      keyword=""
+                      fallbackTitle={`${hotel.name} hotel ${trip?.destination}`}
                     />
                   </div>
                   <div className="p-3 flex flex-col justify-center flex-grow">
@@ -462,7 +395,7 @@ export default function TripDetailsPage() {
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 mb-1">
-                      8th Arrondissement, Paris
+                      {hotel.hotelType}
                     </p>
                     <p className="text-sm font-bold text-blue-600 mt-auto">
                       ${hotel.approximateCostPerNight}{" "}

@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext.jsx";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function LoginPage() {
   const { login, user } = useAuth();
@@ -59,9 +60,15 @@ export default function LoginPage() {
             alt="Next Journey"
             className="max-w-[250px] h-auto"
           />
-          <p className="text-gray-400 font-medium">
+          <p className="text-gray-400 font-medium text-center">
             The Intelligent way to see the world.
           </p>
+          <Link 
+            href="/" 
+            className="text-xs font-semibold text-blue-500 hover:text-blue-700 hover:underline transition-colors mt-2"
+          >
+            &larr; Visit Home page
+          </Link>
 
           {error && (
             <p className="text-red-500 text-sm font-medium mb-4">{error}</p>
