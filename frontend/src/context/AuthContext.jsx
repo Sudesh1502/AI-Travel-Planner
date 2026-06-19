@@ -23,9 +23,6 @@ export const AuthProvider = ({ children }) => {
       const data = await getCurrentUser();
       setUser(data);
     } catch (error) {
-      toast.error(
-          error.response?.data?.message || "Failed to load user."
-        );
       setUser(null);
     } finally {
       setLoading(false);
