@@ -6,7 +6,8 @@ export const registerUser = async(userData) =>{
 }
 export const loginUser = async(userData) =>{
     const response = await api.post("/api/auth/login", userData);
-    return response.data;
+    // Axios puts the body in .data, and your API puts the profile in .user
+    return response.data.user;
 }
 export const logoutUser = async(userData) =>{
     const response = await api.post("/api/auth/logout", userData);
@@ -15,5 +16,5 @@ export const logoutUser = async(userData) =>{
 
 export const getCurrentUser = async() => {
     const response = await api.get("/api/auth/get-me");
-    return response.data;
+    return response.data.data;
 }

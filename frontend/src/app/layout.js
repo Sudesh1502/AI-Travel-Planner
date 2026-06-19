@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext.jsx";
 import { Outfit } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -41,6 +42,7 @@ export default function RootLayout({ children }) {
       
       <body className={`min-h-full flex flex-col ${outfit.className}`}>
         <AuthProvider>
+           <Toaster position="top-center" reverseOrder={false} />
           {children}
         </AuthProvider>
       </body>

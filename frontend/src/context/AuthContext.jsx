@@ -20,8 +20,10 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await getCurrentUser();
+      console.log("FETCHED USER DATA:", data);
       setUser(data);
     } catch (error) {
+      console.log("FAILED TO FETCH USER:", error.message);
       setUser(null);
     } finally {
       setLoading(false);
@@ -31,6 +33,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const data = await loginUser({ email, password });
+      setUser(data)
       fetchuser();
     } catch (error) {
       console.log(error.message);

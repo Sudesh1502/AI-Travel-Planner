@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAllTrips } from "@/services/trip.service";
 import TripsLoader from "@/loaders/TripsLoader";
+import { useAuth } from "@/context/AuthContext";
 export default function MyTripsPage() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     loadTrips();
   }, []);
@@ -73,6 +73,7 @@ export default function MyTripsPage() {
 
        
         {/* Card 4: Plan new */}
+        <Link href="/dashboard/new-trip" className="">
         <div className="border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center p-8 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer min-h-[320px]">
           <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-blue-600 mb-4 shadow-sm">
             <svg
@@ -93,6 +94,7 @@ export default function MyTripsPage() {
             Plan something new
           </h3>
         </div>
+        </Link>
 
       </section>
     </div>

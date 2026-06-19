@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function RegisterPage() {
-    const router = useRouter();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,17 +20,33 @@ export default function RegisterPage() {
     });
   };
 
+  const [error, setError] = useState("");
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.email || !formData.name || !formData.password) {
-      //notify
-      alert("All fields are required!");
+    if (!formData.email || !formData.password) {
+      setError("Email and password are required.");
       return;
     }
 
+    if (formData.name.length < 3) {
+      setError("Name must be at least 3 characters long.");
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setError("");
+
     try {
       if (formData.password !== formData.confirmPassword) {
-        alert("Password Dosen't match!");
+        setError("Password Dosen't match!");
         return;
       }
       await registerUser({
@@ -39,10 +55,9 @@ export default function RegisterPage() {
         password: formData.password,
       });
 
-      Router.push("/login");
+      router.push("/login");
     } catch (error) {
-      console.error(error.message);
-      alert("Login failed!");
+      alert(error.response?.data?.message || "Registration failed. Please try again.");
     }
   };
 
@@ -67,24 +82,7 @@ export default function RegisterPage() {
             </p>
 
             <ul className="space-y-4">
-              <li className="flex items-center gap-3 text-sm font-medium">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-blue-300"
-                >
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                  <path d="m9 12 2 2 4-4" />
-                </svg>
-                Verified Global Routes
-              </li>
+              
               <li className="flex items-center gap-3 text-sm font-medium">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -127,7 +125,11 @@ export default function RegisterPage() {
             <p className="text-gray-500 text-sm mb-5">
               Begin your curated travel experience today.
             </p>
-
+             {error && (
+              <p className="text-red-500 text-sm font-medium mb-4">
+                {error}
+              </p>
+            )}
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-sm text-gray-700 mb-1 font-medium">
