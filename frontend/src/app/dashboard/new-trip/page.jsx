@@ -1,10 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { addTrip } from "@/services/trip.service";
-import FullScreenLoader from "@/loaders/FullScreenLoader";
 import toast from "react-hot-toast";
+import MultiStepLoader from "@/loaders/MultiStepLoader";
 
 const INTERESTS = [
   "Adventure",
@@ -221,7 +220,7 @@ export default function NewTripPage() {
 
   return (
     <div className="w-full min-h-screen bg-[#f8faff] py-12 px-4 sm:px-6 lg:px-8">
-      {loading && <FullScreenLoader />}
+      {loading && <MultiStepLoader />}
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">

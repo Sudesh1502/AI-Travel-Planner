@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
       fetchuser();
     } catch (error) {
       console.log(error.message);
+      throw error;
     }
   };
 

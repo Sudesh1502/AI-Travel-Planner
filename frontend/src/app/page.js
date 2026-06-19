@@ -106,18 +106,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* TRUSTED BY SECTION */}
-        <section className="w-full py-16 border-y border-gray-100 bg-white">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-8">Trusted by travelers from</p>
-            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 grayscale">
-              <h3 className="text-2xl font-bold text-gray-800 tracking-tight">Expedia</h3>
-              <h3 className="text-2xl font-bold text-gray-800 tracking-tight">TripAdvisor</h3>
-              <h3 className="text-2xl font-bold text-gray-800 tracking-tight">Booking.com</h3>
-              <h3 className="text-2xl font-bold text-gray-800 tracking-tight">Airbnb</h3>
-            </div>
-          </div>
-        </section>
+        
 
         {/* FEATURES SECTION */}
         <section className="w-full py-24 bg-gray-50 px-4">

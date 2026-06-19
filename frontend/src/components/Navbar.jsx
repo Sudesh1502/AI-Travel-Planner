@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext.jsx";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const [logoutModal, setLogoutModal] = useState(false);
 
   return (
@@ -48,41 +48,48 @@ export default function Navbar() {
 
           {/* Right: Actions */}
           <div className="flex items-center gap-4">
-            {isAuthenticated &&
-            <Link
-              href="/dashboard/new-trip"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-1"
-            >
-              New Trip <span className="text-lg leading-none">+</span>
-            </Link>
-            }
-            <div className="w-px h-6 bg-gray-200 mx-2"></div>
-
-            {isAuthenticated ? (
-              <button
-                className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setLogoutModal(true);
-                }}
-              >
-                Logout
-              </button>
+            {loading ? (
+              <div className="w-24 h-8 bg-gray-100 animate-pulse rounded-lg"></div>
             ) : (
-              <div className="flex items-center gap-4">
-                <Link
-                  href="/login"
-                  className="text-sm font-bold text-blue-500 hover:text-blue-900 border border-blue-500 hover:border-blue-900 hover:bg-gray py-2 px-5 rounded-lg transition-colors"
-                >
-                  Log in
-                </Link>
-                <Link
-                  href="/register"
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-5 rounded-lg transition-colors shadow-sm"
-                >
-                  Sign up
-                </Link>
-              </div>
+              <>
+                {isAuthenticated && (
+                  <Link
+                    href="/dashboard/new-trip"
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-1"
+                  >
+                    New Trip <span className="text-lg leading-none">+</span>
+                  </Link>
+                )}
+                
+                <div className="w-px h-6 bg-gray-200 mx-2"></div>
+
+                {isAuthenticated ? (
+                  <button
+                    className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setLogoutModal(true);
+                    }}
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-4">
+                    <Link
+                      href="/login"
+                      className="text-sm font-bold text-blue-500 hover:text-blue-900 border border-blue-500 hover:border-blue-900 hover:bg-gray py-2 px-5 rounded-lg transition-colors"
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-5 rounded-lg transition-colors shadow-sm"
+                    >
+                      Sign up
+                    </Link>
+                  </div>
+                )}
+              </>
             )}
 
             {logoutModal && <LogoutModal setLogoutModal={setLogoutModal} />}

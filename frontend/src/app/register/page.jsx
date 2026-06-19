@@ -56,7 +56,7 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
       });
-
+      toast.success("Registration Successful.")
       router.push("/login");
     } catch (error) {
       toast.error(

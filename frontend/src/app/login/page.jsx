@@ -5,7 +5,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -41,6 +41,7 @@ export default function LoginPage() {
 
     try {
       await login(formData.email, formData.password);
+      toast.success("Welcome Back!");
       router.push("/dashboard");
     } catch (error) {
       toast.error(
