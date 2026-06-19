@@ -1,3 +1,4 @@
+/*
 import { NextResponse } from "next/server";
 //protecting the routes from unauthorized users.
 export function proxy(request){
@@ -14,3 +15,4 @@ export function proxy(request){
 export const config = {
     matcher:['/dashboard/:path*']
 }
+*/
