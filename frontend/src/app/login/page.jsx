@@ -45,6 +45,7 @@ export default function LoginPage() {
       toast.success("Welcome Back!");
       router.push("/dashboard");
     } catch (error) {
+      console.log(error.message);
       toast.error(
         error.response?.data?.message || "Login failed. Please try again.",
       );
