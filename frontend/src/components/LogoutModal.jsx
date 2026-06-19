@@ -3,6 +3,7 @@ import { useState } from "react";
 import Modal from "./Modal";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export function LogoutModal({ setLogoutModal }) {
   const router = useRouter();
@@ -15,7 +16,9 @@ export function LogoutModal({ setLogoutModal }) {
       router.push("/login");
       return;
     } catch (error) {
-      console.log(error.message);
+      toast.error(
+          error.response?.data?.message || "Failed to logout."
+        );
     }
   };
   return (
@@ -86,8 +89,6 @@ export function LogoutModal({ setLogoutModal }) {
           </button>
           <button
             onClick={() => {
-              // Drop your context's logout() function here!
-              console.log("Logging out...");
               handleLogout();
               setLogoutModal(false);
             }}

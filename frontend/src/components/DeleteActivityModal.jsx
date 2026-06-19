@@ -53,7 +53,6 @@ export default function DeleteActivityModal({
           </button>
           <button
             onClick={() => {
-              console.log("Confirming Delete for:", activityTitle);
               handleDeleteActivity();
             }}
             className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold shadow-sm transition-colors flex items-center gap-2"

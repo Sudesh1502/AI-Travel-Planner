@@ -41,13 +41,11 @@ export const registerUser = async ({ name, email, password }) => {
 export const loginUser = async ({ email, password }) => {
   try {
     const user = await User.findOne({ email });
-    console.log(password);
     if (!user) {
       throw new ApiError(401, "User Not Found!");
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log(isMatch);
 
     if (!isMatch) {
       throw new ApiError(401, "Invalid Credentials!");

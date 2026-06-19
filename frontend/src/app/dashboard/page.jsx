@@ -42,7 +42,6 @@ export default function DashboardPage() {
       }, 0);
       setTotalDays(calculatedDays);
     } catch (error) {
-      console.error(error);
       toast.error("Failed to load dashboard data.");
     } finally {
       setLoading(false);

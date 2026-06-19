@@ -63,7 +63,9 @@ export default function TripDetailsPage() {
           setActivities(tripData.data.itinerary[0]?.activities || []);
         }
       } catch (error) {
-        console.error(error);
+        toast.error(
+          error.response?.data?.message || "Failed to load trip data",
+        );
       } finally {
         setLoading(false);
       }
@@ -153,7 +155,9 @@ export default function TripDetailsPage() {
         setActivityTime("");
       }
     } catch (error) {
-      console.error(error);
+      toast.error(
+          error.response?.data?.message || "Failed to add activity data"
+        );
     } finally {
       setDayLoading(false);
     }
@@ -172,7 +176,9 @@ export default function TripDetailsPage() {
       }
       setActivityTitle("");
     } catch (error) {
-      console.error(error);
+      toast.error(
+          error.response?.data?.message || "Failed to delete activity data"
+        );
     } finally {
       setDayLoading(false);
       setActivityToDeleteId(null);
@@ -202,7 +208,7 @@ export default function TripDetailsPage() {
       )}
       {regenrateModal && (
         <RegenerateDayModal
-        currentDay={currentDay}
+          currentDay={currentDay}
           handleRegenerate={handleRegenerate}
           setRegenrateModal={setRegenrateModal}
           setDayDescription={setDayDescription}

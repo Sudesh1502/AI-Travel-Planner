@@ -26,9 +26,7 @@ export default function MyTripsPage() {
       setLoading(true);
       const data = await getAllTrips();
       setTrips(data);
-      console.log(data);
     } catch (error) {
-      console.error(error);
       toast.error("Failed to load your trips.");
     } finally {
       setLoading(false);

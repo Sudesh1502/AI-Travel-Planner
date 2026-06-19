@@ -36,7 +36,7 @@ export const generateTripPlan = async (tripData) => {
 
     return tripPlan;
   } catch (error) {
-    console.error("OpenAI Error:", error);
+    
 
     throw new ApiError(500, "Failed to generate trip plan.");
   }

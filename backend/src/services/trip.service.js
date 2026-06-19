@@ -68,7 +68,6 @@ export const getImageUrl = async (keyword) => {
 
     return data.photos?.[0]?.src?.large || "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800&q=80";
   } catch (error) {
-    console.error("Image fetch failed:", error.message);
 
     return "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800&q=80";
   }
@@ -133,7 +132,7 @@ export const addActivity = async ({
   if (!day) {
     throw new ApiError(404, "Day not found");
   }
-  console.log(activityData);
+  
   day.activities.push({
     activityId: randomUUID(),
     title: activityData.title,

@@ -5,6 +5,7 @@ import {
   logoutUser,
 } from "@/services/auth.service.js";
 import { createContext, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
@@ -20,10 +21,11 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await getCurrentUser();
-      console.log("FETCHED USER DATA:", data);
       setUser(data);
     } catch (error) {
-      console.log("FAILED TO FETCH USER:", error.message);
+      toast.error(
+          error.response?.data?.message || "Failed to load user."
+        );
       setUser(null);
     } finally {
       setLoading(false);
@@ -36,7 +38,9 @@ export const AuthProvider = ({ children }) => {
       setUser(data)
       fetchuser();
     } catch (error) {
-      console.log(error.message);
+      toast.error(
+          error.response?.data?.message || "Failed to load trip data"
+        );
       throw error;
     }
   };
