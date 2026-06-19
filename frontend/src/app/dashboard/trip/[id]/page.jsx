@@ -9,15 +9,19 @@ import {
   regenerateDay,
   deleteActivity,
 } from "@/services/trip.service.js";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import FullScreenLoader from "@/loaders/FullScreenLoader";
 import Modal from "@/components/Modal";
 import DayLoader from "@/loaders/DayLoader";
 import ActivityModal from "@/components/ActivityModal";
 import DeleteActivityModal from "@/components/DeleteActivityModal";
+import toast from "react-hot-toast";
+import ActivityImage from "@/components/ActivityImage";
+import { formatTripDates } from "@/utils/dateFormatter";
 
 export default function TripDetailsPage() {
   const params = useParams();
+  const router = useRouter();
 
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -28,7 +32,7 @@ export default function TripDetailsPage() {
   const [activities, setActivities] = useState([]);
   const [dayDescription, setDayDescription] = useState("");
   const [activityModal, setActivityModal] = useState(false);
-  const [deleteActivityModal,setDeleteActivityModal] = useState(false);
+  const [deleteActivityModal, setDeleteActivityModal] = useState(false);
   const [activityToDeleteId, setActivityToDeleteId] = useState(null);
   const [activityTitle, setActivityTitle] = useState("");
   const [activityTime, setActivityTime] = useState("");
@@ -75,9 +79,12 @@ export default function TripDetailsPage() {
 
     setRegenrateModal(false);
     try {
-      if (!dayDescription) {
-        alert("Description/Vibe is required!");
-        setDayLoading(false);
+      if (!dayDescription.trim()) {
+        toast.error("Please describe the schedule or vibe for the day.");
+        return;
+      }
+      if (dayDescription.length > 300) {
+        toast.error("Please keep your description under 300 characters.");
         return;
       }
       const requirements = getRequirements(numberOfActivities, dayDescription);
@@ -89,8 +96,10 @@ export default function TripDetailsPage() {
       if (result.data?.itinerary) {
         setActivities(result.data.itinerary[currentDay - 1]?.activities || []);
       }
+
+      toast.success(`Day ${currentDay} beautifully regenerated!`);
     } catch (error) {
-      console.log(error.message);
+      toast.error(error.response?.data?.message || "Failed to regenerate day.");
     } finally {
       setDayLoading(false);
     }
@@ -101,14 +110,14 @@ export default function TripDetailsPage() {
 
     try {
       if (!activityDescription || !timeString || !activityTitle) {
-        alert("All fields are required!");
+        toast.error("All fields are required!");
         setActivityTitle("");
         setActivityDescription("");
         setActivityTime("");
         return;
       }
       if (activityDescription.length > 350) {
-        alert("Description must be 350 characters or fewer.");
+        toast.error("Description must be 350 characters or fewer.");
         setActivityTitle("");
         setActivityDescription("");
         setActivityTime("");
@@ -155,11 +164,17 @@ export default function TripDetailsPage() {
       setDayLoading(false);
       setActivityToDeleteId(null);
     }
-  }
+  };
 
   return (
     <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
-      {deleteActivityModal && <DeleteActivityModal handleDeleteActivity={handleDeleteActivity} setDeleteActivityModal={setDeleteActivityModal} activityTitle={activityTitle}/>}
+      {deleteActivityModal && (
+        <DeleteActivityModal
+          handleDeleteActivity={handleDeleteActivity}
+          setDeleteActivityModal={setDeleteActivityModal}
+          activityTitle={activityTitle}
+        />
+      )}
       {activityModal && (
         <ActivityModal
           activityTitle={activityTitle}
@@ -233,7 +248,7 @@ export default function TripDetailsPage() {
                     type="button"
                     className="flex-1 h-full flex items-center justify-center text-blue-600 hover:bg-blue-50 transition-colors font-bold text-xl"
                     onClick={() => {
-                      if (numberOfActivities < 30) {
+                      if (numberOfActivities < 15) {
                         setNumberOfActivities((prev) => prev + 1);
                       }
                     }}
@@ -319,24 +334,14 @@ export default function TripDetailsPage() {
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            Oct 12 — Oct 19, 2024 (7 Days)
+            {formatTripDates(trip?.tripDate, trip?.numberOfDays)}
           </div>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg flex items-center gap-2 transition-colors">
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2.5}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-          Mark as Complete
+        <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-2.5 rounded-lg flex items-center gap-2 transition-colors"
+        onClick={() => router.back()}
+        >
+          
+          Back
         </button>
       </div>
 
@@ -423,23 +428,20 @@ export default function TripDetailsPage() {
           <div>
             <div className="flex justify-between items-center mb-3 px-1">
               <h3 className="font-bold text-gray-900">Stays Options</h3>
-              <button className="text-sm font-semibold text-blue-600 hover:text-blue-700">
-                Manage
-              </button>
+              
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 max-h-[400px] overflow-y-scroll pr-2 pb-4 thin-scrollbar">
               {/* Hotel 1 */}
 
               {trip?.hotelSuggestions?.map((hotel) => (
                 <div
-                  className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex items-stretch h-[110px]"
+                  className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex items-stretch h-[110px] shrink-0"
                   key={hotel.name + Date.now()}
                 >
                   <div className="w-[120px] shrink-0 bg-gray-200">
-                    <img
-                      src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80"
-                      alt="Hotel Plaza"
-                      className="w-full h-full object-cover"
+                    <ActivityImage 
+                      keyword="" 
+                      fallbackTitle={`${hotel.name} hotel ${trip?.destination}`} 
                     />
                   </div>
                   <div className="p-3 flex flex-col justify-center flex-grow">
@@ -531,21 +533,39 @@ export default function TripDetailsPage() {
           </div>
 
           {/* Itinerary Cards */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 max-h-[500px] overflow-y-auto pr-2 pb-4 thin-scrollbar">
             {dayLoading ? (
               <DayLoader />
             ) : activities?.length === 0 ? (
               <div className="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-8 shadow-sm flex flex-col items-center justify-center text-center transition-all hover:border-blue-200 hover:bg-gray-50/50">
                 <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-8 h-8 text-blue-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Relax and Unwind at Your Hotel</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  Relax and Unwind at Your Hotel
+                </h3>
                 <p className="text-sm text-gray-500 max-w-md leading-relaxed mb-4">
-                  Take a break from sightseeing and enjoy a peaceful afternoon at your hotel. Relax in your room, read a book, enjoy the hotel amenities, sip your favorite beverage, or simply rest and recharge. This downtime helps you recover your energy and prepare for the next day's adventures.
+                  Take a break from sightseeing and enjoy a peaceful afternoon
+                  at your hotel. Relax in your room, read a book, enjoy the
+                  hotel amenities, sip your favorite beverage, or simply rest
+                  and recharge. This downtime helps you recover your energy and
+                  prepare for the next day's adventures.
                 </p>
-                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full">As per your preference</span>
+                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full">
+                  As per your preference
+                </span>
               </div>
             ) : (
               activities?.map((activity) => (
@@ -573,17 +593,27 @@ export default function TripDetailsPage() {
                       </div>
 
                       {/* Delete Icon */}
-                      <button 
+                      <button
                         className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg -mt-1 -mr-1"
                         onClick={(e) => {
-                           e.preventDefault();
-                           setActivityTitle(activity?.title);
-                           setActivityToDeleteId(activity?.activityId);
-                           setDeleteActivityModal(true);
+                          e.preventDefault();
+                          setActivityTitle(activity?.title);
+                          setActivityToDeleteId(activity?.activityId);
+                          setDeleteActivityModal(true);
                         }}
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -595,16 +625,14 @@ export default function TripDetailsPage() {
                     </p>
                   </div>
                   <div className="w-full md:w-28 h-24 shrink-0 rounded-xl overflow-hidden bg-gray-200">
-                    <img
-                      src="https://images.unsplash.com/photo-1543305113-82b47ebc71dd?w=500&q=80"
-                      alt="Eiffel Tower"
-                      className="w-full h-full object-cover"
+                    <ActivityImage
+                      keyword={activity.imageSearchKeyword}
+                      fallbackTitle={activity.title}
                     />
                   </div>
                 </div>
               ))
             )}
-          
 
             {/* Add Activity Button */}
             <button

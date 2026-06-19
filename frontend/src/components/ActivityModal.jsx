@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Modal from "./Modal";
+import toast from "react-hot-toast";
 
 export default function ActivityModal({
   activityTitle,
@@ -12,7 +13,7 @@ export default function ActivityModal({
   setActivityTime,
   handleAddActivity,
 }) {
-  // these are created to avoid invail time inputs from user end.
+  // these are created to avoid invalid time inputs from user end.
   // Start Time States
   const [startHr, setStartHr] = useState("07");
   const [startMin, setStartMin] = useState("00");
@@ -28,6 +29,18 @@ export default function ActivityModal({
   const minutesOptions = Array.from({ length: 12 }, (_, i) =>
     String(i * 5).padStart(2, "0"),
   );
+
+  const validateData = () => {
+    if (!activityTitle.trim()) {
+      toast.error("Please enter a title for your activity.");
+      return false;
+    }
+    if (!activityDescription.trim()) {
+      toast.error("Please enter a description.");
+      return false;
+    }
+    return true;
+  };
 
   return (
     <Modal>
@@ -189,13 +202,10 @@ export default function ActivityModal({
           </button>
           <button
             onClick={() => {
-              // Send all three values to your handler!
-              console.log("Adding Activity:", {
-                title: activityTitle,
-                description: activityDescription,
-                recommendedTime: activityTime,
-              });
-
+              let isValid = validateData();
+              if(!isValid){
+                return;
+              }
               const formattedTime = `${startHr}:${startMin} ${startAmPm} - ${endHr}:${endMin} ${endAmPm}`;
               setActivityTime(formattedTime); // <-- Async!
               handleAddActivity(formattedTime);

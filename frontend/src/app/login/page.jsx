@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/AuthContext.jsx";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -11,6 +12,7 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const isValidEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -30,19 +32,20 @@ export default function LoginPage() {
       return;
     }
 
-
     if (!isValidEmail(formData.email)) {
       setError("Please enter a valid email address.");
       return;
     }
     //clearing prev states
-    setError(""); 
+    setError("");
 
     try {
       await login(formData.email, formData.password);
       router.push("/dashboard");
     } catch (error) {
-      alert(error.response?.data?.message || "Registration failed. Please try again.");
+      toast.error(
+        error.response?.data?.message || "Login failed. Please try again.",
+      );
     }
   };
 
@@ -60,10 +63,8 @@ export default function LoginPage() {
           </p>
 
           {error && (
-              <p className="text-red-500 text-sm font-medium mb-4">
-                {error}
-              </p>
-            )}
+            <p className="text-red-500 text-sm font-medium mb-4">{error}</p>
+          )}
         </div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Login</h1>
@@ -84,11 +85,21 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-700 mb-1 font-medium">
-              Password
-            </label>
+            <div className="flex justify-between items-end mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors focus:outline-none mb-0.5"
+              >
+                {showPassword ? "Hide" : "View"} Password
+              </button>
+            </div>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="••••••••"
               value={formData.password}

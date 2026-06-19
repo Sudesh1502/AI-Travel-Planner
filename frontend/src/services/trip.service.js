@@ -26,6 +26,10 @@ export const deleteActivity = async (tripId, dayNumber, activityId) => {
   const response = await api.patch(`/api/trips/${tripId}/days/${dayNumber}/remove-activity/${activityId}`);
   return response.data;
 };
+export const deleteTrip = async (tripId) => {
+  const response = await api.delete(`/api/trips/${tripId}`);
+  return response.data;
+};
 
 export const getRequirements = (numberOfActivities, dayDescription) => {
   return (`

@@ -3,6 +3,7 @@ import { registerUser } from "@/services/auth.service";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -57,7 +59,10 @@ export default function RegisterPage() {
 
       router.push("/login");
     } catch (error) {
-      alert(error.response?.data?.message || "Registration failed. Please try again.");
+      toast.error(
+        error.response?.data?.message ||
+          "Registration failed. Please try again.",
+      );
     }
   };
 
@@ -82,7 +87,6 @@ export default function RegisterPage() {
             </p>
 
             <ul className="space-y-4">
-              
               <li className="flex items-center gap-3 text-sm font-medium">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -125,10 +129,8 @@ export default function RegisterPage() {
             <p className="text-gray-500 text-sm mb-5">
               Begin your curated travel experience today.
             </p>
-             {error && (
-              <p className="text-red-500 text-sm font-medium mb-4">
-                {error}
-              </p>
+            {error && (
+              <p className="text-red-500 text-sm font-medium mb-4">{error}</p>
             )}
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
@@ -158,11 +160,21 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-gray-700 mb-1 font-medium">
-                  Password
-                </label>
+                <div className="flex justify-between items-end mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors focus:outline-none mb-0.5"
+                  >
+                    {showPassword ? "Hide" : "View"} Password
+                  </button>
+                </div>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="••••••••"
                   onChange={handleChange}
@@ -175,7 +187,7 @@ export default function RegisterPage() {
                   Confirm Password
                 </label>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="confirmPassword"
                   placeholder="••••••••"
                   onChange={handleChange}

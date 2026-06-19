@@ -25,6 +25,9 @@ Instructions:
 - Return ONLY valid JSON.
 - Do not return markdown.
 - Do not return explanations.
+- STRICT JSON SCHEMA ENFORCEMENT: You MUST return exactly the JSON structure provided below.
+- ALL properties in the schema are REQUIRED. Do NOT omit any properties, arrays, or fields.
+- DO NOT invent new properties or rename existing ones.
 
 Return the response in this format:
 
@@ -34,7 +37,8 @@ Return the response in this format:
     {
       "title": "string",
       "description": "string",
-      "recommendedTime": "string"
+      "recommendedTime": "string",
+      "imageSearchKeyword": "string"
     }
   ]
 }

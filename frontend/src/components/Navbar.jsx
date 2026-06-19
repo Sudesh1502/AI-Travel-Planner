@@ -26,6 +26,12 @@ export default function Navbar() {
 
             <div className="hidden md:flex items-center gap-6 mt-1">
               <Link
+                href="/"
+                className={`text-sm font-semibold pb-5 pt-5 border-b-2 transition-colors ${pathname === "/" ? "text-blue-600 border-blue-600" : "text-gray-500 hover:text-gray-900 border-transparent"}`}
+              >
+                Home
+              </Link>
+              <Link
                 href="/dashboard"
                 className={`text-sm font-semibold pb-5 pt-5 border-b-2 transition-colors ${pathname === "/dashboard" ? "text-blue-600 border-blue-600" : "text-gray-500 hover:text-gray-900 border-transparent"}`}
               >

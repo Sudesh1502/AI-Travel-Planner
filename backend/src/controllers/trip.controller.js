@@ -7,6 +7,7 @@ import {
   addActivity,
   removeActivity,
   regenerateDay,
+  getImageUrl,
 } from "../services/trip.service.js";
 
 //create trip without ai response===========================================
@@ -30,14 +31,18 @@ export const createTripController = async (req, res, next) => {
 
 //generate trip=========================================================
 
-export const generateTripController = async (req, res) => {
-  const trip = await generateTrip(req.body, req.user._id);
+export const generateTripController = async (req, res, next) => {
+  try {
+    const trip = await generateTrip(req.body, req.user._id);
 
-  res.status(200).json({
-    success: true,
-    message: "Trip generated successfully.",
-    data: trip,
-  });
+    res.status(200).json({
+      success: true,
+      message: "Trip generated successfully.",
+      data: trip,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // get trips==============================================================
@@ -147,6 +152,30 @@ export const regenerateDayController = async (req, res, next) => {
     return res
       .status(200)
       .json({ success: true, message: "Day Regenerated.", data: trip });
+  } catch (error) {
+    next(error);
+  }
+};
+//get activitiy images ================================================================
+// get activity image lazily ==============================================
+
+export const getActivityImageController = async (req, res, next) => {
+  try {
+    const { keyword } = req.query;
+
+    if (!keyword || keyword.trim() === "") {
+      return res.status(200).json({
+        success: true,
+        url: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800&q=80",
+      });
+    }
+
+    const url = await getImageUrl(keyword);
+
+    return res.status(200).json({
+      success: true,
+      url,
+    });
   } catch (error) {
     next(error);
   }

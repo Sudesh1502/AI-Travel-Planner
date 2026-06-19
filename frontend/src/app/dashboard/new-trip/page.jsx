@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { addTrip } from "@/services/trip.service";
 import FullScreenLoader from "@/loaders/FullScreenLoader";
+import toast from "react-hot-toast";
 
 const INTERESTS = [
   "Adventure",
@@ -133,6 +134,7 @@ export default function NewTripPage() {
   const router = useRouter();
   const [sourceLocation, setSourceLocation] = useState("");
   const [destination, setDestination] = useState("");
+  const [tripDate, setTripDate] = useState("");
   const [userPreferences, setUserPreferences] = useState("");
   const [budget, setBudget] = useState("medium");
   const [travelType, setTravelType] = useState("solo");
@@ -143,44 +145,80 @@ export default function NewTripPage() {
 
   const resetValues = () => {
     setSourceLocation("");
-      setDestination("");
-      setUserPreferences("");
-      setBudget("medium");
-      setTravelType("solo");
-      setNumberOfDays(1);
-      setGroupSize(1);
-      setSelectedInterests([]);
-  }
+    setDestination("");
+    setUserPreferences("");
+    setBudget("medium");
+    setTravelType("solo");
+    setNumberOfDays(1);
+    setGroupSize(1);
+    setSelectedInterests([]);
+  };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (!sourceLocation || !destination || selectedInterests.length === 0) {
-        alert("All field are required!");
+      if (!sourceLocation.trim()) {
+        toast.error("Please fill in your departure city.");
         return;
       }
+      if (!destination.trim()) {
+        toast.error("Please fill in your destination.");
+        return;
+      }
+      if (selectedInterests.length === 0) {
+        toast.error("Please select an interest.");
+        return;
+      }
+
+      if (sourceLocation.length > 50 || destination.length > 50) {
+        toast.error("City names must be under 50 characters.");
+        return;
+      }
+      if (!tripDate) {
+        toast.error("Please fill start date.");
+        return;
+      }
+
+      if (userPreferences.length > 300) {
+        toast.error(
+          "Please keep your additional preferences under 350 characters.",
+        );
+        return;
+      }
+
+      if (travelType == "solo" && groupSize > 1) {
+        toast.error("Your travel type and group size dosen't match.");
+        return;
+      }
+
       const payload = {
         sourceLocation,
         destination,
+        tripDate,
         travelType,
         interests: selectedInterests,
         numberOfDays,
         groupSize,
         budgetType: budget,
-        userPreferences,
+        userPreferences: userPreferences.trim(),
       };
       setLoading(true);
       const trip = await addTrip(payload);
-      console.log(trip);
+
       setLoading(false);
+      toast.success("Bags packed? Your journey is ready.");
       resetValues();
       router.push("/dashboard/my-trips");
     } catch (error) {
-      console.log(error.message);
-      alert("Please try after sometime!");
-      resetValues();
+      setLoading(false);
+
+      const backendMessage =
+        error.response?.data?.message ||
+        "Failed to generate trip. Please try again.";
+      toast.error(backendMessage);
     }
   };
+
   return (
     <div className="w-full min-h-screen bg-[#f8faff] py-12 px-4 sm:px-6 lg:px-8">
       {loading && <FullScreenLoader />}
@@ -223,7 +261,7 @@ export default function NewTripPage() {
               <h2 className="text-gray-900 font-semibold">Basic Information</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Departure City */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -254,7 +292,7 @@ export default function NewTripPage() {
                   <input
                     type="text"
                     name="sourceLocation"
-                    onChange={(e)=>{
+                    onChange={(e) => {
                       setSourceLocation(e.target.value);
                     }}
                     value={sourceLocation}
@@ -288,12 +326,45 @@ export default function NewTripPage() {
                   <input
                     type="text"
                     name="destination"
-                    onChange={(e)=>{
+                    onChange={(e) => {
                       setDestination(e.target.value);
                     }}
                     className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                     value={destination}
                     placeholder="e.g. Tokyo, Japan"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Trip Start Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Start Date
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <input
+                    type="date"
+                    name="tripDate"
+                    onChange={(e) => setTripDate(e.target.value)}
+                    value={tripDate}
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   />
                 </div>
               </div>
@@ -456,22 +527,70 @@ export default function NewTripPage() {
                     className={`rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${budget === "low" ? "border-2 border-blue-600 bg-blue-50/50" : "border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"}`}
                     onClick={() => setBudget("low")}
                   >
-                    <svg className={`w-6 h-6 ${budget === "low" ? "text-blue-600" : "text-gray-500"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                    <span className={`text-sm font-semibold ${budget === "low" ? "text-blue-600" : "text-gray-700"}`}>Budget</span>
+                    <svg
+                      className={`w-6 h-6 ${budget === "low" ? "text-blue-600" : "text-gray-500"}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                    <span
+                      className={`text-sm font-semibold ${budget === "low" ? "text-blue-600" : "text-gray-700"}`}
+                    >
+                      Budget
+                    </span>
                   </div>
                   <div
                     className={`rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${budget === "medium" ? "border-2 border-blue-600 bg-blue-50/50" : "border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"}`}
                     onClick={() => setBudget("medium")}
                   >
-                    <svg className={`w-6 h-6 ${budget === "medium" ? "text-blue-600" : "text-gray-500"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                    <span className={`text-sm font-semibold ${budget === "medium" ? "text-blue-600" : "text-gray-700"}`}>Standard</span>
+                    <svg
+                      className={`w-6 h-6 ${budget === "medium" ? "text-blue-600" : "text-gray-500"}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                      />
+                    </svg>
+                    <span
+                      className={`text-sm font-semibold ${budget === "medium" ? "text-blue-600" : "text-gray-700"}`}
+                    >
+                      Standard
+                    </span>
                   </div>
                   <div
                     className={`rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${budget === "high" ? "border-2 border-blue-600 bg-blue-50/50" : "border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"}`}
                     onClick={() => setBudget("high")}
                   >
-                    <svg className={`w-6 h-6 ${budget === "high" ? "text-blue-600" : "text-gray-500"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-                    <span className={`text-sm font-semibold ${budget === "high" ? "text-blue-600" : "text-gray-700"}`}>Luxury</span>
+                    <svg
+                      className={`w-6 h-6 ${budget === "high" ? "text-blue-600" : "text-gray-500"}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                      />
+                    </svg>
+                    <span
+                      className={`text-sm font-semibold ${budget === "high" ? "text-blue-600" : "text-gray-700"}`}
+                    >
+                      Luxury
+                    </span>
                   </div>
                 </div>
               </div>
@@ -602,7 +721,7 @@ export default function NewTripPage() {
                 className="w-full p-4 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
                 placeholder="e.g. 'I want the cheapest trip possible', 'Avoid crowded places', 'Include vegan-friendly spots only'..."
                 name="userPreferences"
-                onChange={(e)=>{
+                onChange={(e) => {
                   setUserPreferences(e.target.value);
                 }}
               ></textarea>

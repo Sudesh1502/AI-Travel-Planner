@@ -7,6 +7,11 @@ const activitySchema = new mongoose.Schema(
       required: true,
     },
 
+    imageSearchKeyword: {
+      type: String,
+      default: "",
+    },
+
     title: {
       type: String,
       required: true,
@@ -130,6 +135,10 @@ const tripSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    tripDate: {
+      type: Date,
+      required: true,
+    },
 
     numberOfDays: {
       type: Number,
@@ -165,6 +174,15 @@ const tripSchema = new mongoose.Schema(
     userPreferences: {
       type: String,
       maxlength: 5000,
+      default: "",
+    },
+
+    coverImage: {
+      type: String,
+      default: "/images/default-travel.jpg",
+    },
+    coverImageKeyword: {
+      type: String,
       default: "",
     },
 
