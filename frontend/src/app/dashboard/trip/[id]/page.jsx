@@ -158,6 +158,7 @@ export default function TripDetailsPage() {
       if (result.data?.itinerary) {
         setActivities(result.data.itinerary[currentDay - 1]?.activities || []);
       }
+      setActivityTitle("");
     } catch (error) {
       console.error(error);
     } finally {
