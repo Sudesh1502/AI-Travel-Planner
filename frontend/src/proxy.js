@@ -1,18 +1,11 @@
-/*
 import { NextResponse } from "next/server";
-//protecting the routes from unauthorized users.
-export function proxy(request){
-    
-    const token = request.cookies.get("token");
 
-    if(!token){
-        return NextResponse.redirect(new URL("/login", request.url));
-    }
-
+export function proxy(request) {
+    // TEMPORARILY DISABLED: Always allow the request to pass through
     return NextResponse.next();
-};
+}
 
 export const config = {
-    matcher:['/dashboard/:path*']
-}
-*/
+    // Match nothing, or just leave empty to be safe
+    matcher: []
+};
