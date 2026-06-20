@@ -267,7 +267,7 @@ export default function TripDetailsPage() {
           {/* Budget Summary Card */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-gray-900">Budget Summary</h3>
+              <h3 className="font-bold text-gray-900">Budget Summary per Person</h3>
               <span className="text-2xl font-bold text-blue-600">
                 ${trip?.budgetEstimate?.total}
               </span>
