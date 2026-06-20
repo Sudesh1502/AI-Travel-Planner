@@ -155,7 +155,7 @@ export default function DashboardPage() {
             >
               <div className="h-40 w-full bg-gray-200 relative">
                 <ActivityImage
-              keyword={trip.coverImage}
+              keyword={trip.imageSearchKeyword}
               fallbackTitle={trip.destination}
             />
                 <div className="absolute bottom-3 left-3 bg-white px-2 py-1 rounded text-[10px] font-bold text-blue-600 tracking-wider">
