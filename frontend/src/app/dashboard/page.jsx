@@ -1,4 +1,5 @@
 "use client";
+import ActivityImage from "@/components/ActivityImage";
 import { useAuth } from "@/context/AuthContext";
 import { getAllTrips } from "@/services/trip.service.js";
 import Image from "next/image";
@@ -49,14 +50,14 @@ export default function DashboardPage() {
   };
 
   const getBudgetType = (budget) => {
-    if(budget === "low"){
+    if (budget === "low") {
       return "Budget";
-    }else if(budget === "medium"){
+    } else if (budget === "medium") {
       return "Standard";
-    }else{
+    } else {
       return "Luxury";
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -103,10 +104,9 @@ export default function DashboardPage() {
         {/* Card 2 */}
         <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
-            <img
-              src="/plan.jpg"
-              alt="Planned Days"
-              className="w-full h-full object-cover"
+            <ActivityImage
+              keyword={"Trip Planning"}
+              fallbackTitle={"Plan days"}
             />
           </div>
           <div>
@@ -120,19 +120,10 @@ export default function DashboardPage() {
         {/* Card 3 */}
         <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 bg-purple-50 text-purple-500 rounded-lg flex items-center justify-center shrink-0">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <ActivityImage
+              keyword={"Budget of trip"}
+              fallbackTitle={"Expense"}
+            />
           </div>
           <div>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">
@@ -163,15 +154,13 @@ export default function DashboardPage() {
               className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col relative group"
             >
               <div className="h-40 w-full bg-gray-200 relative">
-                <img
-                  src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80"
-                  alt="Kyoto"
-                  className="w-full h-full object-cover"
-                />
+                <ActivityImage
+              keyword={trip.coverImage}
+              fallbackTitle={trip.destination}
+            />
                 <div className="absolute bottom-3 left-3 bg-white px-2 py-1 rounded text-[10px] font-bold text-blue-600 tracking-wider">
-              {getBudgetType(trip.budgetType)}
-            </div>
-                
+                  {getBudgetType(trip.budgetType)}
+                </div>
               </div>
               <div className="p-5 flex flex-col flex-grow">
                 <div className="flex justify-between items-start mb-2">
@@ -203,7 +192,7 @@ export default function DashboardPage() {
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    7 Days
+                    {trip.numberOfDsys} Days
                   </div>
                   <div className="flex items-center gap-1">
                     <svg

@@ -55,7 +55,7 @@ Return JSON matching this exact structure:
           "title": "Activity Name",
           "description": "Short activity description",
           "recommendedTime": "08:00 AM - 10:00 AM",
-          "imageSearchKeyword": "Eiffel Tower Paris",
+          "imageSearchKeyword": "Eiffel Tower Paris"
         }
       ]
     }
